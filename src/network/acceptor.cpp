@@ -1,26 +1,20 @@
 #include "network/acceptor.hpp"
 
-void Acceptor::handler(const boost::system::error_code &_error) noexcept { 
-    if (!_error) {
-        std::string ip { mp_socket->remote_endpoint().address().to_string() };
-        OUTPUT("Connected: " << ip, FOREGROUND_GREEN)
-        Handler::processSocket(mp_socket);
+boost::asio::awaitable<void> Acceptor::start() noexcept {
+    try {
+        tcp::acceptor acceptor { m_io, { tcp::v4(), 9090 } };
+        while (true) {
+            tcp::socket *result { new tcp::socket {
+                co_await acceptor.async_accept(boost::asio::use_awaitable)
+            } };
+            boost::asio::co_spawn(
+                m_io,
+                Handler::processSocket(result),
+                boost::asio::detached
+            );
+        }
     }
-    else {
-        delete mp_socket;
+    catch (const std::exception &e) {
+        std::cerr << "Acceptor::start()\n" << e.what() << '\n';
     }
-
-    start();
-}
-
-void Acceptor::start() noexcept { 
-    mp_socket = new tcp::socket { m_io };
-    m_acceptor.async_accept(
-        *mp_socket, 
-         boost::bind(
-             &Acceptor::handler,
-              this,
-              boost::asio::placeholders::error
-         )
-    );
 }

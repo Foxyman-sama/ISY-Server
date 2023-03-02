@@ -7,19 +7,12 @@
 class Acceptor {
 private:
     boost::asio::io_context &m_io;
-    tcp::acceptor            m_acceptor;
-    tcp::socket             *mp_socket;
-
-private:
-    void handler(const boost::system::error_code &_error) noexcept;
 
 public:
     explicit Acceptor(boost::asio::io_context &_io) noexcept 
-        : m_io { _io }
-        , m_acceptor { _io, tcp::endpoint { tcp::v4(), 9090 } }
-        , mp_socket { } { }
+        : m_io { _io } { }
 
-    void start() noexcept;
+    boost::asio::awaitable<void> start() noexcept;
 };
 
 #endif

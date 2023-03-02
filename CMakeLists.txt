@@ -8,11 +8,16 @@ set(HEADERS
 	include/network/acceptor.hpp	
 	include/system/handler.hpp	
 	include/network/data.hpp	
-	include/network/reader.hpp)	
+	include/network/reader.hpp	
+	include/system/system.hpp	
+	include/libs.hpp
+	include/network/writer.hpp)	
 set(SOURCES
 	src/network/acceptor.cpp
 	src/system/handler.cpp	
-	src/network/reader.cpp)	
+	src/network/reader.cpp	
+	src/system/system.cpp
+	src/network/writer.cpp)		
 
 find_package(Boost REQUIRED)
 
